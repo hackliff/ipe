@@ -1,0 +1,123 @@
+#!/usr/bin/env bash
+# vim: set filetype=sh:
+
+# unofficial bash strict mode
+# http://redsymbol.net/articles/unofficial-bash-strict-mode/
+
+# constants (
+  PROGRAM="${0##*/}"
+  IPE_VERSION="0.1.0"
+  IPE_HOME=$HOME/.ipe
+  IPE_LIB=${IPE_HOME}/lib
+  IPE_PKG=${IPE_HOME}/pkg
+  USER_SHELLRC=$HOME/.$(basename $SHELL)rc
+  FNAME_CHARS='[a-zA-Z0-9_-]'
+
+  Z_URL="https://raw.githubusercontent.com/rupa/z/master/z.sh"
+# )
+
+cmd_version() {
+  echo -e "ζ ipe v${IPE_VERSION} - Insanely Productive Environment\n"
+}
+
+cmd_usage() {
+  cmd_version
+  cat <<_EOF
+Usage:
+
+  $PROGRAM
+    Print version and this helpful message
+
+  $PROGRAM install <package_url>
+    Download and make an ipe library available for loading.
+
+  $PROGRAM (.|hack) <project>
+    Activate <project> environment.
+
+  $PROGRAM (env|what)
+    Show environment description and available commands
+
+  $PROGRAM reset
+    Remove packages and dependencies.
+_EOF
+}
+
+_install_z() {
+  local install_path="$1"
+
+  wget -q -O ${install_path} ${Z_URL}
+}
+
+_install_autoenv() {
+  local install_path="$1"
+
+  git clone https://github.com/hackliff/autoenv ${IPE_LIB}/.autoenv
+  echo 'source ~/.autoenv/activate.sh' >> ~/.bashrc
+}
+
+_reload_lib() {
+  . ${IPE_HOME}/{lib,pkg}/*.sh
+}
+
+cmd_init() {
+  [[ -d "${IPE_HOME}" ]] || mkdir -p ${IPE_HOME}/{lib,pkg}
+  [[ -f "${IPE_HOME}/lib/z.sh" ]] || _install_z ${IPE_LIB}/z.sh
+}
+
+cmd_work() {
+  local project=${1}
+
+  echo "activating '${project}' environment"
+  . ${IPE_LIB}/z.sh
+  _z 2>&1 "${project}"
+
+  # drop us in the script current shell
+  # http://stackoverflow.com/questions/255414/why-doesnt-cd-work-in-a-bash-shell-script
+  exec "$SHELL"
+}
+
+# Echo a list of aliases, exports, and functions for a given desk
+get_callables() {
+      local env_file=${1:-"./.env"}
+
+      #grep -E "^(alias |export |(function )?${FNAME_CHARS}+ ?\()|function $NAME" "${env_file}" \
+      cat "${env_file}" | grep -A1 "##" \
+        | sed 's/alias \([^= ]*\)=.*/\1/' \
+        | sed 's/export \([^= ]*\)=.*/\1/' \
+        | sed -E "s/(function )?(${FNAME_CHARS}+) ?\(\).*/\2/" \
+        | sed -E "s/function (${FNAME_CHARS}+).*/\1/"
+}
+
+require() {
+  local package_url="$1"
+  local package_name="$(basename ${package_url})"
+
+  if [[ ! -f "${IPE_PKG}/${package_name}" ]]; then
+    echo "downloading ${package_name}..."
+    wget -q --directory-prefix ${IPE_PKG} ${package_url}
+  fi
+
+  echo "loading ${package_name}"
+  . ${IPE_PKG}/${package_name}
+}
+
+cmd_reset() {
+  rm -rf ${IPE_HOME}
+}
+
+_is_initialized() {
+  [[ -d "$HOME/.ipe" ]]
+}
+
+cmd_init
+
+case "${1:-}" in
+  help|-h|--help) shift;        cmd_usage "$@" ;;
+  version|-v|--version) shift;  cmd_version "$@" ;;
+  hack|.) shift;                cmd_work "$@" ;;
+  install) shift;               require "$@" ;;
+  env|what) shift;              get_callables "$@" ;;
+  reset) shift;                 cmd_reset "$@" ;;
+  *)                            cmd_usage "$@" ;;
+esac
+exit 0
