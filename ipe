@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 # vim: set filetype=sh:
 
-# unofficial bash strict mode
-# http://redsymbol.net/articles/unofficial-bash-strict-mode/
-
 # constants (
   PROGRAM="${0##*/}"
   IPE_VERSION="0.1.0"
