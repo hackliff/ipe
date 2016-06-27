@@ -1,7 +1,34 @@
 #!/usr/bin/env bash
 # vim: set filetype=sh:
+#
+# Usage:
+#
+#   ./ipe [ ... TODO ... ]
+#
+# Based on a template by BASH3 Boilerplate v2.0.0
+# Copyright (c) 2016 Xavier Bruhiere and contributors
+
+# Exit on error. Append || true if you expect an error.
+set -o errexit
+# Exit on error inside any functions or subshells.
+set -o errtrace
+# Do not allow use of undefined vars. Use ${VAR:-} to use an undefined VAR
+set -o nounset
+# Catch the error in case mysqldump fails (but gzip succeeds) in `mysqldump |gzip`
+set -o pipefail
+# Turn on traces, useful while debugging but commented out by default
+# set -o xtrace
 
 # constants (
+  # Set magic variables for current file, directory, os, etc.
+  __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  __file="${__dir}/$(basename "${BASH_SOURCE[0]}")"
+  __base="$(basename ${__file} .sh)"
+
+  # Define the environment variables (and their defaults) that this script depends on
+  LOG_LEVEL="${LOG_LEVEL:-6}" # 7 = debug -> 0 = emergency
+  NO_COLOR="${NO_COLOR:-}"    # true = disable color. otherwise autodetected
+
   PROGRAM="${0##*/}"
   IPE_VERSION="0.1.0"
   IPE_HOME=$HOME/.ipe
@@ -9,8 +36,6 @@
   IPE_PKG=${IPE_HOME}/pkg
   USER_SHELLRC=$HOME/.$(basename $SHELL)rc
   FNAME_CHARS='[a-zA-Z0-9_-]'
-
-  Z_URL="https://raw.githubusercontent.com/rupa/z/master/z.sh"
 # )
 
 cmd_version() {
@@ -39,26 +64,8 @@ Usage:
 _EOF
 }
 
-_install_z() {
-  local install_path="$1"
-
-  wget -q -O ${install_path} ${Z_URL}
-}
-
-_install_autoenv() {
-  local install_path="$1"
-
-  git clone https://github.com/hackliff/autoenv ${IPE_LIB}/.autoenv
-  echo 'source ~/.autoenv/activate.sh' >> ~/.bashrc
-}
-
 _reload_lib() {
   . ${IPE_HOME}/{lib,pkg}/*.sh
-}
-
-cmd_init() {
-  [[ -d "${IPE_HOME}" ]] || mkdir -p ${IPE_HOME}/{lib,pkg}
-  [[ -f "${IPE_HOME}/lib/z.sh" ]] || _install_z ${IPE_LIB}/z.sh
 }
 
 cmd_work() {
@@ -101,12 +108,6 @@ require() {
 cmd_reset() {
   rm -rf ${IPE_HOME}
 }
-
-_is_initialized() {
-  [[ -d "$HOME/.ipe" ]]
-}
-
-cmd_init
 
 case "${1:-}" in
   help|-h|--help) shift;        cmd_usage "$@" ;;

@@ -38,19 +38,6 @@ _remember_init () {
   test -f ${init_filepath} || touch ${init_filepath}
 }
 
-_if_not_installed () {
-  local bin="$1"
-  local install_command="$2"
-  command -v ${bin} > /dev/null 2>&1 || eval ${install_command}
-}
-
-_check_dependencies () {
-  _if_not_installed ghi "gem install ghi"
-  _if_not_installed hr "brew install hr"
-  #_if_not_installed noti "brew install noti"
-  _if_not_installed yosay "npm install -g yosay"
-}
-
 _activate_runtime () {
   local runtime_version=$1
   ipe_printf "activating project runtime ${runtime_version}"
@@ -96,7 +83,6 @@ ipe_env_exec() {
 ipe_main () {
   hr "~"
   echo
-  _check_dependencies
 
   ipe_env_exec $@
 
