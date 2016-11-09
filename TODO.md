@@ -8,6 +8,7 @@
 - Use plugins/hooks for features
 - Git hooks
 - Integrate docker
+- Integrate suit-up dotfiles
 
 
 ## Design

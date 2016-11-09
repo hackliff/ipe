@@ -3,12 +3,15 @@
 
 # constants (
   PROGRAM="${0##*/}"
+
   IPE_VERSION="0.1.0"
   IPE_HOME=$HOME/.ipe
   IPE_LIB=${IPE_HOME}/lib
   IPE_PKG=${IPE_HOME}/pkg
+
   USER_SHELLRC=$HOME/.$(basename $SHELL)rc
   Z_URL="https://raw.githubusercontent.com/rupa/z/master/z.sh"
+  TMUXP_HOME="$HOME/.tmuxp"
 # )
 
 _if_not_installed () {
@@ -36,6 +39,12 @@ install_autoenv() {
 
   git clone https://github.com/hackliff/autoenv ${install_path}
   echo "source ${install_path}/activate.sh" >> ${USER_SHELLRC}
+}
+
+install_tmuxp () {
+  pip install -U tmuxp
+  test -d ${TMUXP_HOME} || mkdir -p ${TMUXP_HOME}
+  # NOTE copy a standard hack.yaml ?
 }
 
 _is_initialized() {

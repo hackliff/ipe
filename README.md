@@ -6,7 +6,7 @@
 daily workflows. It features:
 
 - `cd` instantely in the right folder (thanks to [z][z])
-- Drop you in a productive terminal with [tmux][tmux]
+- Drop you in a productive terminal with [tmux][tmux] and [tmuxp][tmuxp]
 - Auto-(un)load commands, aliases, environment variables, per-project to
   cross-machines (thanks to [autoenv][autoenv])
 - Dead-simple extension system
@@ -18,3 +18,4 @@ daily workflows. It features:
 [z]: https://github.com/rupa/z
 [tmux]: tmux
 [autoenv]: autoenv
+[tmuxp]: https://github.com/tony/tmuxp
