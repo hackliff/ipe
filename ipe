@@ -12,8 +12,6 @@
 set -o errexit
 # Exit on error inside any functions or subshells.
 set -o errtrace
-# Do not allow use of undefined vars. Use ${VAR:-} to use an undefined VAR
-set -o nounset
 # Catch the error in case mysqldump fails (but gzip succeeds) in `mysqldump |gzip`
 set -o pipefail
 # Turn on traces, useful while debugging but commented out by default
@@ -21,22 +19,22 @@ set -o pipefail
 
 # constants (
   # Set magic variables for current file, directory, os, etc.
-  __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-  __file="${__dir}/$(basename "${BASH_SOURCE[0]}")"
-  __base="$(basename ${__file} .sh)"
-
-  # Define the environment variables (and their defaults) that this script depends on
-  LOG_LEVEL="${LOG_LEVEL:-6}" # 7 = debug -> 0 = emergency
-  NO_COLOR="${NO_COLOR:-}"    # true = disable color. otherwise autodetected
+  # __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  # __file="${__dir}/$(basename "${BASH_SOURCE[0]}")"
+  # __base="$(basename ${__file} .sh)"
 
   PROGRAM="${0##*/}"
   IPE_VERSION="0.1.0"
   IPE_HOME=$HOME/.ipe
   IPE_LIB=${IPE_HOME}/lib
   IPE_PKG=${IPE_HOME}/pkg
-  USER_SHELLRC=$HOME/.$(basename $SHELL)rc
+  # USER_SHELLRC=$HOME/.$(basename $SHELL)rc
   FNAME_CHARS='[a-zA-Z0-9_-]'
 # )
+
+_ipe_log() {
+  echo "[ ipe ] $@"
+}
 
 cmd_version() {
   echo -e "ζ ipe v${IPE_VERSION} - Insanely Productive Environment\n"
@@ -65,14 +63,14 @@ _EOF
 }
 
 _reload_lib() {
-  . ${IPE_HOME}/{lib,pkg}/*.sh
+  . "${IPE_HOME}/{lib,pkg}/*.sh"
 }
 
 cmd_work() {
   local project=${1}
 
-  echo "activating '${project}' environment"
-  . ${IPE_LIB}/z.sh
+  _ipe_log "activating '${project}' environment"
+  . "${IPE_LIB}/z.sh"
   _z 2>&1 "${project}"
 
   # drop us in the script current shell
@@ -97,11 +95,11 @@ require() {
   local package_name="$(basename ${package_url})"
 
   if [[ ! -f "${IPE_PKG}/${package_name}" ]]; then
-    echo "downloading ${package_name}..."
+    _ipe_log "downloading ${package_name}..."
     wget -q --directory-prefix ${IPE_PKG} ${package_url}
   fi
 
-  echo "loading ${package_name}"
+  _ipe_log "loading ${package_name}"
   . ${IPE_PKG}/${package_name}
 }
 

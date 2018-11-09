@@ -3,15 +3,16 @@
 
 # Automatic project-scope setup
 #
+#
 # notes:
-#   - methods starting with "__" are private, other are meant to be exposed to the developer
+#   - methods starting with "_" are private, other are meant to be exposed to the developer
 #
 # dependencies:
 #   - Env auto-(un)loading : https://github.com/hackliff/autoenv
-#   - Time tracking : http://tailordev.github.io/Watson/
-#   - Notification : https://github.com/variadico/noti
-#   - Bash lib : https://github.com/LuRsT/hr
-#   - Issue tracker : https://github.com/stephencelis/ghi
+#   - [not yet] Time tracking : http://tailordev.github.io/Watson/
+#   - [not yet] Notification : https://github.com/variadico/noti
+#   - [not yet] Bash lib : https://github.com/LuRsT/hr
+#   - [not yet] Issue tracker : https://github.com/stephencelis/ghi
 
 # since we need some custom tools, setup shell if necessary
 #[ -n "${__SHELL_ENV_LOADED__}"   ] || source $HOME/.zshrc
@@ -22,8 +23,8 @@
 # generic project management
 export __PROJECT__="$(basename $PWD)"
 export IPE_SHELLRC="$HOME/.$(basename $SHELL)rc"
-export IPE_TMP_PATH=/tmp
-export IPE_INIT_FILE_PATH=${IPE_TMP_PATH}/${__PROJECT__}-init.ipe
+export IPE_TMP_PATH="/tmp"
+export IPE_INIT_FILE_PATH="${IPE_TMP_PATH}/${__PROJECT__}-init.ipe"
 
 ## user settings
 export RUNTIME_VERSION="6.0.0"

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# vim: set filetype=sh:
+
+# unofficial strict mode
+set -eo pipefail
 
 # constants (
   PROGRAM="${0##*/}"
@@ -22,8 +24,6 @@ _if_not_installed () {
 }
 
 check_dependencies () {
-  _if_not_installed ghi "gem install ghi"
-  _if_not_installed hr "brew install hr"
   _if_not_installed noti "brew install noti"
   _if_not_installed yosay "npm install -g yosay"
 }
@@ -31,6 +31,7 @@ check_dependencies () {
 install_z() {
   local install_path="$1"
 
+  # TODO replace by curl
   wget -q -O ${install_path} ${Z_URL}
 }
 
@@ -47,16 +48,21 @@ install_tmuxp () {
   # NOTE copy a standard hack.yaml ?
 }
 
-_is_initialized() {
+() {
   [[ -d "$HOME/.ipe" ]]
 }
 
 main() {
   check_dependencies
+
   [[ -d "${IPE_HOME}" ]] || mkdir -p ${IPE_HOME}/{lib,pkg}
   [[ -f "${IPE_LIB}/z.sh" ]] || install_z ${IPE_LIB}/z.sh
-  [[ -d "${IPE_LIB}/autoenv" ]] || install_autoenv ${IPE_LIB}/autoenv
+  # FIXME use upstream now
+  #[[ -d "${IPE_LIB}/autoenv" ]] || install_autoenv ${IPE_LIB}/autoenv
+
+  cp ./ipe /usr/local/bin/ipe
 }
 
 # idempotent support for installation
+# TODO
 _is_initialized || main $@

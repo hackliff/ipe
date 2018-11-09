@@ -11,7 +11,22 @@ daily workflows. It features:
   cross-machines (thanks to [autoenv][autoenv])
 - Dead-simple extension system
 
-**WIP, more to come soon**
+!! **WIP, more to come soon**
+!! Only tested on Mac
+
+
+### Getting started
+
+```Bash
+git clone https://github.com/xav-b/ipe && ./ipe/bootstrap.sh
+# does it work ?
+ipe version
+```
+
+```Bash
+# use `z`, so fuzzy match `<proj>`
+ipe hack <proj>
+```
 
 
 
